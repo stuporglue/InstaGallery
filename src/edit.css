@@ -3,6 +3,8 @@ html,body {
     padding: 0;
     background: #d0d5ee url('data:image/gif;base64,R0lGODlhBgAGAIABAP///wAAACH5BAEKAAEALAAAAAAGAAYAAAIJRB6geMuOYAMFADs') fixed;
     height: 100%;
+    color: #444;
+    text-align: center;
 }
 
 #nav {
@@ -10,35 +12,27 @@ html,body {
     background: rgba(255,255,255,0.8);
     padding: 3px 10px;
     width: calc(100% - 20px);
+    text-align: left;
 }
 
 #slides {
     padding-top: 25px;
     height: calc(100% - 25px);
-    display: inline-block;
-}
-
-#slides > * {
-   background-color: white;
+    max-width: 100%;
 }
 
 .error {
-    text-align: center;
-    margin-top: 200px;
-    margin-left: calc(25% - 25px/2) ;
-    margin-right: calc(25% - 25px/2) ;
-    margin-bottom: auto;
+    margin-top: 200px calc(25% - 25px/2);
     padding: 25px;
 }
 
 .thumbnailwrapouter {
-    backround-color: white;
+    display: inline-block;
     height: 230px;
     width: 230px;
-    border: 1px solid #ccc;
     margin: 10px;
-    display: inline-block;
-    text-align: center;
+    background-color: white;
+    border: 1px solid #ccc;
     -webkit-box-shadow: 6px 10px 13px -1px rgba(94,94,94,0.7);
     -moz-box-shadow: 6px 10px 13px -1px rgba(94,94,94,0.7);
     box-shadow: 6px 10px 13px -1px rgba(94,94,94,0.7);
@@ -52,58 +46,33 @@ html,body {
     overflow: hidden;
 }
 
-.thumbnail {
-    display: inline-block;
-    vertical-align: middle;
-}
-
-.vahelper {
-    height: 100%;
-    display: inline-block;
-    vertical-align: middle;
-}
-
-a.fancybox {
-    text-decoration: none;
-}
-
-a.fancybox:active {
-    outline: none;
-}
-
 .filename {
-    display: block;
-    text-decoration: none;
-    color: #444;
-    position: relative;
-    text-align: center;
+    margin: 0 10px;
     font-family: 'Shadows Into Light', cursive;
     font-size: 20px;
-    text-overflow: ellipsis;
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .parent::after {
     content: ' :: ';
 }
 
-
 #ctrlbox {
-    display: block;
     z-index: 1000;
     position: absolute;
     top: 0;
+    right: 50px;
     height: 50px;
     width: 120px;
-    right: 0;
-    margin-right: 50px;
     text-align: right;
     color: white;
-    font-size: larger;
-    font-weight: bold;
+    font: larger bold;
     cursor: pointer;
 }
 
 #ctrlbox i {
     padding: 15px;
 }
+

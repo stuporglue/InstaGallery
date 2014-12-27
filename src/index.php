@@ -21,8 +21,6 @@
 
     Instructions:
         * Titles/Captions
-            - If a directory has a file named "titles.csv" it will be used to load captions for the photos. 
-            - The first column should be the filename (eg. 0001.jpg). The second column should be the caption to use.
  */
 
 
@@ -153,7 +151,7 @@ function getMedia($targetdir){
         $fh = fopen($targetdir . '/titles.csv','r');
         while(!feof($fh)){
             $line = fgetcsv($fh);
-            if(count($line) >= 2){
+            if(count($line) === 2){
                 $titles[$line[0]] = $line[1];
             }
         }
@@ -279,8 +277,8 @@ $slides = getSlides($targetdir,$relpath);
 // HTML Page
 $title = "Choose a Photo Collection";
 
-if($relpath !== './'){
-    $title = explode('/',trim($relpath,'/'));
+if($targetdir !== './'){
+    $title = explode('/',trim($targetdir,'/'));
     $title = array_map('prettyName',$title);
     $title = implode(' | ',$title);
 }
@@ -291,86 +289,7 @@ if($relpath !== './'){
 <link href='//fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
 <link href='//cdn.rawgit.com/brutaldesign/swipebox/master/src/css/swipebox.min.css' rel='stylesheet' type='text/css'>
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-<style type='text/css'>
-html,body {
-    margin: 0;
-    padding: 0;
-    background: #d0d5ee url('data:image/gif;base64,R0lGODlhBgAGAIABAP///wAAACH5BAEKAAEALAAAAAAGAAYAAAIJRB6geMuOYAMFADs') fixed;
-    height: 100%;
-    color: #444;
-    text-align: center;
-}
-
-#nav {
-    position: absolute;
-    background: rgba(255,255,255,0.8);
-    padding: 3px 10px;
-    width: calc(100% - 20px);
-    text-align: left;
-}
-
-#slides {
-    padding-top: 25px;
-    height: calc(100% - 25px);
-    max-width: 100%;
-}
-
-.error {
-    margin-top: 200px calc(25% - 25px/2);
-    padding: 25px;
-}
-
-.thumbnailwrapouter {
-    display: inline-block;
-    height: 230px;
-    width: 230px;
-    margin: 10px;
-    background-color: white;
-    border: 1px solid #ccc;
-    -webkit-box-shadow: 6px 10px 13px -1px rgba(94,94,94,0.7);
-    -moz-box-shadow: 6px 10px 13px -1px rgba(94,94,94,0.7);
-    box-shadow: 6px 10px 13px -1px rgba(94,94,94,0.7);
-}
-
-.thumbnailinner {
-    display: inline-block;
-    height: 175px;
-    width: 200px;
-    margin-top: 15px;
-    overflow: hidden;
-}
-
-.filename {
-    margin: 0 10px;
-    font-family: 'Shadows Into Light', cursive;
-    font-size: 20px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-}
-
-.parent::after {
-    content: ' :: ';
-}
-
-#ctrlbox {
-    z-index: 1000;
-    position: absolute;
-    top: 0;
-    right: 50px;
-    height: 50px;
-    width: 120px;
-    text-align: right;
-    color: white;
-    font: larger bold;
-    cursor: pointer;
-}
-
-#ctrlbox i {
-    padding: 15px;
-}
-
-</style>
+<link rel='stylesheet' href='edit.css'>
 </head>
 <body>
     <div id='nav'>
@@ -381,61 +300,6 @@ html,body {
     </div>
     <script src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
     <script src='//cdn.rawgit.com/brutaldesign/swipebox/master/src/js/jquery.swipebox.js'></script>
-    <script>
-        $('a.swipebox').swipebox({
-            hideBarsDelay: -1,
-            afterOpen: function(){
-                var ui = $.swipebox.extend();
-                var close = $('#swipebox-close');
-                var fs = $('<i class="fa fa-arrows-alt"></i>');
-                fs.on('click',function(){
-                    var elem = $('#swipebox-overlay')[0];
-                    if (elem.requestFullscreen) {
-                        elem.requestFullscreen();
-                    } else if (elem.msRequestFullscreen) {
-                        elem.msRequestFullscreen();
-                    } else if (elem.mozRequestFullScreen) {
-                        elem.mozRequestFullScreen();
-                    } else if (elem.webkitRequestFullscreen) {
-                        elem.webkitRequestFullscreen();
-                    }
-                });
-
-                var pp = $('<i id="ppbutton" class="fa fa-play"></i>');
-                pp.on('click',function(e){
-                    var button = $(e.target);
-                    if(button.hasClass('fa-play')){
-                        button.removeClass('fa-play').addClass('fa-pause');
-                        button.attr('data-intid',window.setInterval(function(){ui.getNext()},5000));
-                    }else{
-                        button.removeClass('fa-pause').addClass('fa-play');
-                        window.clearInterval(button.attr('data-intid'));
-                        button.attr('data-intid','');
-                    }
-                });
-                var ctrlbox = $("<div id='ctrlbox'>");
-                ctrlbox.append(pp);
-                ctrlbox.append(fs);
-                close.after(ctrlbox);
-
-                // Play/pause button
-                // Spacebar/Enter advances
-                // big Fullscreen
-            },
-            afterClose: function(){
-                window.clearInterval($('#ppbutton').attr('data-intid'));
-            }
-        });
-
-        $('#navchange').on('change',function(e){
-            document.location.search = 'd=' + e.target.value;
-        });
-
-        $(document).on('keyup',function(e){
-            if((e.keyCode == 32 || e.keyCode == 13) && $('#swipebox-overlay').length > 0){
-                $.swipebox.extend().getNext();
-            }
-        });
-    </script>
+    <script src='edit.js'></script>
     </body>
 </html>
