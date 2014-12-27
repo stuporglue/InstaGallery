@@ -321,11 +321,14 @@ html,body {
 #slides {
     padding-top: 25px;
     max-width: 100%;
+    border: 2px beveled black;
 }
 
 .error {
-    margin-top: 200px calc(25% - 25px/2);
+    margin: 50px calc(25% - 25px/2);
     padding: 25px;
+    border: 5px groove #ccc;
+    background-color: rgba(255,255,255,0.6);
 }
 
 .thumbnailwrapouter {
