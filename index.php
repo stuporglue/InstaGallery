@@ -10,26 +10,19 @@
  * Quick Start: 
  * Place this file in the top-level directory where you want photo galleries to appear. 
  *
- * Features: 
-    * Supports multiple directories
-    * Mobile Friendly
-    * Fullscreen
-    * Supports image titles/captions
-    * Generates thumbnails if directories are writable and PHP-GD is enabled
-    * Supports videos (coming...) and images
-    * Slideshow support
-
-    Instructions:
-        * Titles/Captions
-            - If a directory has a file named "titles.csv" it will be used to load captions for the photos. 
-            - The first column should be the filename (eg. 0001.jpg). The second column should be the caption to use.
+ * For more details see https://github.com/stuporglue/InstaGallery
  */
 
 
-
 // The base directory for the photos
-// You can change this if they're somewhere else...
 $path = __DIR__;
+$thumbnailSize = 350; // size in pixels
+$bgcolor = '#d0d5ee';
+
+
+///////////////////////////////////////////////////////////////////////////////////////////
+/////   Be careful below here...
+///////////////////////////////////////////////////////////////////////////////////////////
 
 
 /**
@@ -203,12 +196,23 @@ function getSlides($targetdir,$relpath){
 /**
  * Print and possibly save a thumbnail image
  */
-function printThumbnail($targetdir){
+function printThumbnail($targetdir,$thumbnailSize){
     $orig = $targetdir . '/' . $_GET['t'];
     $thumb = preg_replace('/(.*)\.([a-z]{3})$/',"$1" . "_thumb." . "$2",$orig);
 
+    if(is_file($thumb)){
+        readfile($thumb);
+        exit();
+    }
+
     if(!is_file($orig)){
         header("HTTP/1.0 404 Not Found");
+        exit();
+    }
+
+    // This is going to slow down the user experience...
+    if (!extension_loaded('gd') || !function_exists('gd_info')) {
+        readfile($orig);
         exit();
     }
 
@@ -232,27 +236,32 @@ function printThumbnail($targetdir){
             break;
         default:
             readfile($orig);
-            return;
+            exit();
         }   
 
         $width = $image_info[0];
         $height = $image_info[1];
 
         if ($width > $height) {
-            $newwidth = 300;
-            $newheight = floor($height / ($width / 300));
+            // The actual minimum dimension to match the CSS
+            $resizeFactor = $thumbnailSize / 0.9;
+            $newwidth = $resizeFactor;
+            $newheight = floor($height / ($width / $resizeFactor));
         } else {
-            $newheight = 300;
-            $newwidth = floor($width / ($height / 300) );
-        }   
-
-        if($width < 300 && $height < 300){
-            $newwidth = $width;
-            $newheight = $height;
+            // The actual minimum dimension to match the CSS
+            $resizeFactor = $thumbnailSize / 0.75;
+            $newheight = $resizeFactor;
+            $newwidth = floor($width / ($height / $resizeFactor) );
         }   
 
         $tmpimg = imagecreatetruecolor( $newwidth, $newheight );
-        imagecopyresampled( $tmpimg, $img, 0, 0, 0, 0, $newwidth, $newheight, $width, $height );
+        imagecopyresampled($tmpimg, $img, 0, 0, 0, 0, $newwidth, $newheight, $width, $height );
+        $tmpimg = imagecrop($tmpimg,Array(
+            'x' => $newwidth / 2 - ($thumbnailSize * 0.9) / 2,
+            'y' => $newheight / 2 - ($thumbnailSize * 0.75) / 2,
+            'width' => $thumbnailSize * 0.9,
+            'height' => $thumbnailSize * 0.75 
+        ));
         $outfunc($tmpimg, $thumb);
         if(file_exists($thumb)){
             readfile($thumb);
@@ -268,7 +277,7 @@ $targetdir = getTargetPath($path);
 $relpath = trim(str_replace($path,'',$targetdir),'/');
 
 if(isset($_GET['t'])){
-    printThumbnail($targetdir);    
+    printThumbnail($targetdir,$thumbnailSize);    
     exit();
 }
 
@@ -295,7 +304,7 @@ if($relpath !== './'){
 html,body {
     margin: 0;
     padding: 0;
-    background: #d0d5ee url('data:image/gif;base64,R0lGODlhBgAGAIABAP///wAAACH5BAEKAAEALAAAAAAGAAYAAAIJRB6geMuOYAMFADs') fixed;
+    background: <?=$bgcolor?> url('data:image/gif;base64,R0lGODlhBgAGAIABAP///wAAACH5BAEKAAEALAAAAAAGAAYAAAIJRB6geMuOYAMFADs') fixed;
     height: 100%;
     color: #444;
     text-align: center;
@@ -311,7 +320,6 @@ html,body {
 
 #slides {
     padding-top: 25px;
-    height: calc(100% - 25px);
     max-width: 100%;
 }
 
@@ -322,8 +330,8 @@ html,body {
 
 .thumbnailwrapouter {
     display: inline-block;
-    height: 230px;
-    width: 230px;
+    height: <?=$thumbnailSize?>px;
+    width: <?=$thumbnailSize?>px;
     margin: 10px;
     background-color: white;
     border: 1px solid #ccc;
@@ -334,8 +342,8 @@ html,body {
 
 .thumbnailinner {
     display: inline-block;
-    height: 175px;
-    width: 200px;
+    height: calc(<?=$thumbnailSize?>px * 0.75);
+    width: calc(<?=$thumbnailSize?>px * 0.9);
     margin-top: 15px;
     overflow: hidden;
 }
@@ -343,7 +351,7 @@ html,body {
 .filename {
     margin: 0 10px;
     font-family: 'Shadows Into Light', cursive;
-    font-size: 20px;
+    font-size: calc(<?=$thumbnailSize?>px * 0.1);
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -369,7 +377,15 @@ html,body {
 #ctrlbox i {
     padding: 15px;
 }
+#footer {
+    margin: 30px;
+}
 
+#footer a {
+    text-decoration: none;
+    color: #555;
+    font-weight: bold;
+}
 </style>
 </head>
 <body>
@@ -378,6 +394,9 @@ html,body {
     </div>
     <div id='slides'>
         <?=$slides?>
+    </div>
+    <div id='footer'>
+        <a href='https://github.com/stuporglue/InstaGallery'>Gallery by InstaGallery</a>
     </div>
     <script src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
     <script src='//cdn.rawgit.com/brutaldesign/swipebox/master/src/js/jquery.swipebox.js'></script>
