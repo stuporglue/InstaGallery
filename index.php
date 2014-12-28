@@ -57,10 +57,14 @@ function getTargetPath($path){
  * @return A pretty name string
  */
 function prettyName($name){
+    $origName = $name;
     $name = basename($name);
     $name = preg_split('/([^\w-]|[_])/',$name);
     $name = array_map('ucfirst',$name);
-    $name = implode(' ',$name);
+    $name = implode(' ',array_filter($name));
+    if($name === ''){
+        return $origName;
+    }
     return $name;
 }
 
@@ -74,7 +78,7 @@ function getNav($path,$relpath){
     $dots = Array('.','..');
     $wrapup = Array();
     foreach($objects as $name => $object){
-        if($object->isDir() && !in_array($object->getBaseName(),$dots)){
+    if($object->isDir() && !in_array($object->getBaseName(),$dots)){
             $name = explode('/',str_replace($path . '/','',$name));
             $wraplink = &$wrapup;
             $part = array_shift($name);
@@ -82,35 +86,41 @@ function getNav($path,$relpath){
                 $wraplink = &$wraplink[$part];
                 $part = array_shift($name);
             }
-            $wraplink[$part] = Array();
+            if($part[0] != '.'){ // skip hidden files/directories
+                $wraplink[$part] = Array();
+            }
         }
     }
 
-    $html = "";
     $rel = array_filter(explode('/',$relpath));
-    $subpath = Array();
-    foreach($rel as $idx => $pathpart){
-        $wrapup = &$wrapup[$pathpart];
+    $pathparts = Array();
+    $navparts[] = "<span><a href='?d=' class='home'>Home</a></span>";
 
-        $class='parent';
-        if(count($wrapup) === 0){
-            $class = '';
+    $builtPath = Array();
+    foreach($rel as $curpart){
+        uksort($wrapup,function($a,$b){ return strnatcmp(prettyName($a),prettyName($b)); });
+        $html = "\n<select class='navchange'>\n";
+        foreach($wrapup as $pathpart => $childparts){
+            $html .= "<option value='" . implode('/',$builtPath) . (count($builtPath) > 0 ? '/' : '') . $pathpart . "'". ($pathpart == $curpart ? ' selected' : '')  .">" . prettyName($pathpart) . "</option>";
         }
-
-        $html .= "<span class='$class'><a href='?d=" . implode('/',$subpath) . "'>" . prettyName($pathpart) . "</a></span>";
-        $subpath[] = $pathpart;
+        $wrapup = &$wrapup[$curpart];
+        $builtPath[] = $curpart;
+        $html .= "</select>\n";
+        $navparts[] = $html;
     }
 
     if(count($wrapup) > 0){
-        $html .= "<select id='navchange'>";
-        $html .= "<option value='" . (strlen($relpath) > 0 ? implode('/',$rel) . "/" : '') . "'>" . '--' . "</option>\n";
-        foreach($wrapup as $pathpart => $children){
-            $html .= "<option value='" . (strlen($relpath) > 0 ? implode('/',$rel) . "/" : '') .  "$pathpart'>" . prettyName($pathpart) . "</option>\n";
+        $html = "\n<select class='navchange'>\n";
+        $html .= "<option value='" . implode('/',$builtPath) ."'>--</option>\n";
+        uksort($wrapup,function($a,$b){ return strnatcmp(prettyName($a),prettyName($b)); });
+        foreach($wrapup as $pathpart => $childparts){
+            $html .= "<option value='" . implode('/',$builtPath) . (count($builtPath) > 0 ? '/' : '') . $pathpart . "'>" . prettyName($pathpart) . "</option>";
         }
         $html .= "</select>\n";
+        $navparts[] = $html;
     }
 
-    return $html;
+    return "<form>" . implode(' :: ',$navparts) . "</form>";
 }
 
 /**
@@ -176,14 +186,14 @@ function getSlides($targetdir,$relpath){
     foreach($media as $filename => $title){
             $thumbname = $relpath . '/' . preg_replace('/(.*)\.([a-z]{3})/',"$1" . "_thumb." . "$2",$filename);
             if(!is_file($thumbname)){
-                $thumbname = "?d=$relpath&t=$filename";
+                $thumbname = "?d=$relpath&amp;t=$filename";
             }
             $html .= "<div class='thumbnailwrapouter'>";
-            $html .= "<span class='thumbnailinner'>\n";
-                $html .= "<a href='$baseurl/$relpath/$filename' title='".htmlentities($title)."' class='swipebox thumbnaillink' rel='album' >\n";
-                    $html .= "<img src='$thumbname' class='thumbnail'/>\n";
+            $html .= "<span class='thumbnailinner'>";
+                $html .= "<a href='$baseurl/$relpath/$filename' title='".htmlentities($title)."' class='swipebox thumbnaillink' rel='album' >";
+                    $html .= "<img src='$thumbname' class='thumbnail'/>";
                 $html .= "</a>";
-            $html .= "</span>\n";
+            $html .= "</span>";
             $html .= "<div class='filename'>". $title ."</div></div>\n";
     }
     if(count($media) === 0){
@@ -360,10 +370,6 @@ html,body {
     text-overflow: ellipsis;
 }
 
-.parent::after {
-    content: ' :: ';
-}
-
 #ctrlbox {
     z-index: 1000;
     position: absolute;
@@ -389,6 +395,29 @@ html,body {
     color: #555;
     font-weight: bold;
 }
+
+select {
+    padding:3px;
+    margin: 0;
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    border-radius:4px;
+    border: solid 1px #999;
+    background: #fff;
+    color:#000;
+    outline:none;
+    display: inline-block;
+    cursor:pointer;
+}
+
+.home {
+    text-decoration: none;
+    color: #000
+}
+.home:hover {
+    text-decoration: underline;
+}
+
 </style>
 </head>
 <body>
@@ -449,8 +478,10 @@ html,body {
             }
         });
 
-        $('#navchange').on('change',function(e){
-            document.location.search = 'd=' + e.target.value;
+        $('.navchange').on('change',function(e){
+            if(('d=' + e.target.value) != document.location.search){
+                document.location.search = 'd=' + e.target.value;
+            }
         });
 
         $(document).on('keyup',function(e){
