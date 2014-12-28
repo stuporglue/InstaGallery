@@ -46,3 +46,15 @@ Near the top of InstaGallery are three user-configurable variables.
 * $thumbnailSize sets how big the Polaroid styled image squares should be. 
 * $bgcolor sets the page's background color. 
 * You're welcome to remove the "Gallery by InstaGallery" link at the bottom of the page
+
+Advanced
+-------
+If you need extra functionality you might be able to do it with a plugin.
+
+Plugins are very simple, and won't handle every case.
+
+Anything named instaGallery_*.inc will be included at the start of the gallery loading. 
+
+The plugin can do whatever it needs and add any HTML it wishes to print to the $moreHtml array. 
+
+A sample digest authentication plugin is included. This *does* make it so it's not a single-file gallery any more, but only if you want some extra features.

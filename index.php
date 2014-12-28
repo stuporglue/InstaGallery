@@ -24,6 +24,11 @@ $bgcolor = '#d0d5ee';
 /////   Be careful below here...
 ///////////////////////////////////////////////////////////////////////////////////////////
 
+$moreHtml = Array();
+foreach(glob("instaGallery_*.inc") as $plugin){
+    include($plugin);
+}
+
 
 /**
  * Verify that the requested path is within the $path
@@ -430,6 +435,7 @@ select {
     <div id='footer'>
         <a href='https://github.com/stuporglue/InstaGallery'>Gallery by InstaGallery</a>
     </div>
+    <?php print implode("\n",$moreHtml); ?>
     <script src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
     <script src='//cdn.rawgit.com/brutaldesign/swipebox/master/src/js/jquery.swipebox.js'></script>
     <script>
