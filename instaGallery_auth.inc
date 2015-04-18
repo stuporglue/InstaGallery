@@ -3,9 +3,8 @@
 $realm = 'Photo Gallery';
 $errorMessage = "Sorry, you must log in to view this gallery";
 $users = Array(
-    'moore' => 'slides',
-    'janny' => 'slides',
-    'family' => 'slides'
+    'username' => 'password',
+    'username2' => 'password2'
     ); // Array('username' => 'password');
 
 // function to parse the http auth header
