@@ -210,7 +210,7 @@ $commentsCode = "
     function makeCommentDialog(e){
         var outer = $(e.target).closest('.thumbnailwrapouter');
         var filename = outer.attr('id');
-        $.get("?d=" + relpath + "&c=" + filename,function(success){
+        $.get(\"?d=\" + relpath + \"&c=\" + filename,function(success){
             $('#commentsbox').html(success);
             $('#commentsboxwrap').show();
         });
@@ -225,7 +225,7 @@ $commentsCode = "
             $(document.getElementById(pid)).find('fa-comments-o').removeClass('fa-comments-o').addClass('fa-comments');
             $('#commentsbox').html(success);
         },function(fail){
-            $('#commentsbox').html("There was an error saving your comment. Please let the site owner know.");
+            $('#commentsbox').html(\"There was an error saving your comment. Please let the site owner know.\");
         });
     
         return false;
