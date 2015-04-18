@@ -14,21 +14,14 @@
  */
 
 
-// The base directory for the photos
-$path = __DIR__;
-$thumbnailSize = 350; // size in pixels
-$bgcolor = '#d0d5ee';
+$path = __DIR__;      // The base directory for the photos, defaults to the current directory
+$thumbnailSize = 300; // size in pixels
+$bgcolor = '#d0d5ee'; // background color
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 /////   Be careful below here...
 ///////////////////////////////////////////////////////////////////////////////////////////
-
-$moreHtml = Array();
-foreach(glob("instaGallery_*.inc") as $plugin){
-    include($plugin);
-}
-
 
 /**
  * Verify that the requested path is within the $path
@@ -40,6 +33,7 @@ function getTargetPath($path){
     // Find and validate the target path
     $targetdir = $path  . (isset($_REQUEST['d']) ? '/' . $_REQUEST['d'] : '');
     while(strpos($targetdir,'..') !== FALSE){
+        die("No double dot paths");
         // Get rid of double dots and make sure that our path is a subdirectory of the $path directory
         // Can't use realpath because symlinks might make something a valid path 
         preg_replace('|/.*?/../|','');
@@ -87,7 +81,7 @@ function getNav($path,$relpath){
             $name = explode('/',str_replace($path . '/','',$name));
             $wraplink = &$wrapup;
             $part = array_shift($name);
-            while(is_array($wraplink[$part])){
+            while(@is_array($wraplink[$part])){
                 $wraplink = &$wraplink[$part];
                 $part = array_shift($name);
             }
@@ -193,7 +187,7 @@ function getSlides($targetdir,$relpath){
             if(!is_file($thumbname)){
                 $thumbname = "?d=$relpath&amp;t=$filename";
             }
-            $html .= "<div class='thumbnailwrapouter'>";
+            $html .= "<div id='$filename' class='thumbnailwrapouter'>";
             $html .= "<span class='thumbnailinner'>";
                 $html .= "<a href='$baseurl/$relpath/$filename' title='".htmlentities($title)."' class='swipebox thumbnaillink' rel='album' >";
                     $html .= "<img src='$thumbname' class='thumbnail'/>";
@@ -271,12 +265,14 @@ function printThumbnail($targetdir,$thumbnailSize){
 
         $tmpimg = imagecreatetruecolor( $newwidth, $newheight );
         imagecopyresampled($tmpimg, $img, 0, 0, 0, 0, $newwidth, $newheight, $width, $height );
-        $tmpimg = imagecrop($tmpimg,Array(
-            'x' => $newwidth / 2 - ($thumbnailSize * 0.9) / 2,
-            'y' => $newheight / 2 - ($thumbnailSize * 0.75) / 2,
-            'width' => $thumbnailSize * 0.9,
-            'height' => $thumbnailSize * 0.75 
-        ));
+        if(function_exists('imagecrop')){
+            $tmpimg = imagecrop($tmpimg,Array(
+                'x' => $newwidth / 2 - ($thumbnailSize * 0.9) / 2,
+                'y' => $newheight / 2 - ($thumbnailSize * 0.75) / 2,
+                'width' => $thumbnailSize * 0.9,
+                'height' => $thumbnailSize * 0.75 
+            ));
+        }
         $outfunc($tmpimg, $thumb);
         if(file_exists($thumb)){
             readfile($thumb);
@@ -291,6 +287,17 @@ function printThumbnail($targetdir,$thumbnailSize){
 $targetdir = getTargetPath($path);
 $relpath = trim(str_replace($path,'',$targetdir),'/');
 
+/**
+ * Include any addons
+ */
+$moreHtml = Array();
+foreach(glob("instaGallery_*.inc") as $plugin){
+    include($plugin);
+}
+
+/**
+ * Print the thumbnail and exit
+ */
 if(isset($_GET['t'])){
     printThumbnail($targetdir,$thumbnailSize);    
     exit();
@@ -311,10 +318,12 @@ if($relpath !== './'){
 ?>
 <!DOCTYPE HTML>
 <html><head>
+<meta charset='utf-8'>
 <title><?=$title?></title>
 <link href='//fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
 <link href='//cdn.rawgit.com/brutaldesign/swipebox/master/src/css/swipebox.min.css' rel='stylesheet' type='text/css'>
 <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 <style type='text/css'>
 html,body {
     margin: 0;
@@ -373,6 +382,7 @@ html,body {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    display: inline-block;
 }
 
 #ctrlbox {
@@ -424,6 +434,8 @@ select {
 }
 
 </style>
+    <script src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+    <script src='//cdn.rawgit.com/brutaldesign/swipebox/master/src/js/jquery.swipebox.js'></script>
 </head>
 <body>
     <div id='nav'>
@@ -436,8 +448,6 @@ select {
         <a href='https://github.com/stuporglue/InstaGallery'>Gallery by InstaGallery</a>
     </div>
     <?php print implode("\n",$moreHtml); ?>
-    <script src='//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
-    <script src='//cdn.rawgit.com/brutaldesign/swipebox/master/src/js/jquery.swipebox.js'></script>
     <script>
         $('a.swipebox').swipebox({
             hideBarsDelay: -1,

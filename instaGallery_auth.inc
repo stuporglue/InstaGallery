@@ -2,7 +2,11 @@
 
 $realm = 'Photo Gallery';
 $errorMessage = "Sorry, you must log in to view this gallery";
-$users = Array(); // Array('username' => 'password');
+$users = Array(
+    'moore' => 'slides',
+    'janny' => 'slides',
+    'family' => 'slides'
+    ); // Array('username' => 'password');
 
 // function to parse the http auth header
 function http_digest_parse($txt)
@@ -22,7 +26,7 @@ function http_digest_parse($txt)
     return $needed_parts ? false : $data;
 }
 
-if($_REQUEST['a'] == 'logout'){
+if(isset($_REQUEST['a']) && $_REQUEST['a'] == 'logout'){
     header('HTTP/1.0 401 Unauthorized');
     $newUri = str_replace($_SERVER['QUERY_STRING'],'',$_SERVER['REQUEST_URI']);
     header("Location: $newUri");
