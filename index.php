@@ -139,7 +139,7 @@ function getMedia($targetdir){
     $files = glob($globby);
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     foreach($files as $filename){
-        if(preg_match('/(.*)_thumb\.([a-z]{3})/',$filename)){
+        if(preg_match('/(.*)_thumb\.([A-Za-z]{3})/',$filename)){
             continue;
         }
 
@@ -183,7 +183,7 @@ function getSlides($targetdir,$relpath){
     $baseurl = dirname($_SERVER['PHP_SELF']);
     $html = '';
     foreach($media as $filename => $title){
-            $thumbname = $relpath . '/' . preg_replace('/(.*)\.([a-z]{3})/',"$1" . "_thumb." . "$2",$filename);
+            $thumbname = $relpath . '/' . preg_replace('/(.*)\.([A-Za-z]{3})/',"$1" . "_thumb." . "$2",$filename);
             if(!is_file($thumbname)){
                 $thumbname = "?d=$relpath&amp;t=$filename";
             }
@@ -207,7 +207,7 @@ function getSlides($targetdir,$relpath){
  */
 function printThumbnail($targetdir,$thumbnailSize){
     $orig = $targetdir . '/' . $_GET['t'];
-    $thumb = preg_replace('/(.*)\.([a-z]{3})$/',"$1" . "_thumb." . "$2",$orig);
+    $thumb = preg_replace('/(.*)\.([A-Za-z]{3})$/',"$1" . "_thumb." . "$2",$orig);
 
     if(is_file($thumb)){
         readfile($thumb);
@@ -274,12 +274,14 @@ function printThumbnail($targetdir,$thumbnailSize){
             ));
         }
         $outfunc($tmpimg, $thumb);
+        
         if(file_exists($thumb)){
             readfile($thumb);
         }else{
             $outfunc($tmpimg);
         }   
     } catch (Exception $e){
+        print $e;
         readfile($orig);
     }
 }
@@ -383,6 +385,7 @@ html,body {
     white-space: nowrap;
     text-overflow: ellipsis;
     display: inline-block;
+    max-width: calc(100% - 30px);
 }
 
 #ctrlbox {

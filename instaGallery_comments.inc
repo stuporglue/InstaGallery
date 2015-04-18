@@ -222,7 +222,7 @@ $commentsCode = "
         
         prom.then(function(success){
             var pid = $('.newcomment').find('input[type=hidden]').val();
-            $(document.getElementById(pid)).find('fa-comments-o').removeClass('fa-comments-o').addClass('fa-comments');
+            $(document.getElementById(pid)).find('.fa-comments-o').removeClass('fa-comments-o').addClass('fa-comments');
             $('#commentsbox').html(success);
         },function(fail){
             $('#commentsbox').html(\"There was an error saving your comment. Please let the site owner know.\");
