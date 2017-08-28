@@ -82,17 +82,11 @@ $commentsCode = "
 <style type='text/css'>
 
 .fa-comments-o, .fa-comments {
-     color: #999;
-     float: left;
-     position: absolute;
-     z-index: 1000;
-     font-size: 20px;
-     margin: 4px 0 0 4px;
-     background: #ddd;
-     border: 3px ridge black;
-     border-radius: 15px;
-     padding: 3px;
-     cursor: pointer;
+	position: relative;
+	float: left;
+	margin-right: 5px;
+	margin-bottom: 3px;
+	cursor: pointer;
  }
 
 .fa-comments {
