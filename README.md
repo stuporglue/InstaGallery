@@ -11,20 +11,39 @@ Features
  * Supports image titles/captions
  * Generates thumbnails if directories are writable and PHP-GD is enabled
  * Slideshow support
-
+ * Uses HTML5 Video to display video files.
 
 TODO
 ----
- * HTML5 Video support
  * mod_rewrite / pretty URL support
 
 Instructions
 ------------
-Simply place this index.php file in the top-level directory of your collection of images.
+Simply place index.php in the top-level directory of your collection of images.
 
 ### Titles / Captions ###
 If a directory has a file named *titles.csv* it will be used to load captions for the photos. 
 The first column should be the filename (eg. 0001.jpg). The second column should be the caption to use. Any other columns will be ignored
+
+### Plugins ###
+
+If you need extra functionality you might be able to do it with a plugin.
+
+This *does* make it so it's not a single-file gallery any more, but only if you want some extra features.
+
+Just upload the plugin file(s) into your directory along side of index.php.
+
+Three sample plugins are included: 
+
+ * instaGallery_auth.inc — A sample digest authentication plugin. Edit it to set the usernames and passwords. Note that digest authentication is like a picket fence. It's not actual security but gives some minor level of privacy.
+ * instaGallery_comments.inc — Allow visitors to comment on individual photos and files. Requires that the server have write access to the directory the files are in. Creates a simple FILENAME_comments.html file for each file that has comments.
+ * instaGallery_download.inc — Allow visitors to easily download individual files.
+
+
+#### Custom Plugins ####
+Anything named instaGallery_*.inc will be included at the start of the gallery loading. 
+
+The plugin can do whatever it needs and simply appends any HTML it wishes to print to the $moreHtml array. 
 
 
 Optimizing
@@ -40,21 +59,9 @@ In short:
 
 Customizing
 -----------
-Near the top of InstaGallery are three user-configurable variables. 
+Near the top of InstaGallery's index.php file are three user-configurable variables. 
 
 * $path can be set to some other directory which will be used to load the photos. This is experamental and probably won't work. 
 * $thumbnailSize sets how big the Polaroid styled image squares should be. 
 * $bgcolor sets the page's background color. 
 * You're welcome to remove the "Gallery by InstaGallery" link at the bottom of the page
-
-Advanced
--------
-If you need extra functionality you might be able to do it with a plugin.
-
-Plugins are very simple, and won't handle every case.
-
-Anything named instaGallery_*.inc will be included at the start of the gallery loading. 
-
-The plugin can do whatever it needs and add any HTML it wishes to print to the $moreHtml array. 
-
-A sample digest authentication plugin is included. This *does* make it so it's not a single-file gallery any more, but only if you want some extra features.
