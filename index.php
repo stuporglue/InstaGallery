@@ -184,7 +184,6 @@ function getMedia($targetdir){
  */
 function getSlides($targetdir,$relpath,$thumbnailSize){
     $media = getMedia($targetdir);
-    $baseurl = dirname($_SERVER['PHP_SELF']);
     $html = '';
 
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -196,12 +195,13 @@ function getSlides($targetdir,$relpath,$thumbnailSize){
             }
             $html .= "<div id='$filename' class='thumbnailwrapouter'>";
             $html .= "<span class='thumbnailinner'>";
+            $filepath = preg_replace('#/+#','/', ($relpath == '' ? '' : $relpath . '/') . $filename);
 
-			$mime = finfo_file($finfo,$baseurl . '/' . $relpath . '/' . $filename);
+			$mime = finfo_file($finfo, $filepath);
 
 			if(strpos($mime,'video') === 0){
 
-				if ( filesize( $baseurl . '/' . $relpath . '/' . $filename ) > 5000000 ) {
+				if ( filesize( $filepath ) > 5000000 ) {
 					$preload_and_poster = 'poster="' . $thumbname . '" preload="none"';
 				} else {
 					$preload_and_poster = '';
@@ -209,10 +209,10 @@ function getSlides($targetdir,$relpath,$thumbnailSize){
 					
 				
 				$html .= '<video data-mime="' . $mime . '" width="' . ( $thumbnailSize * 0.9 ) . '" height="' . ( $thumbnailSize * 0.7 ). '" controls loop ' . $preload_and_poster . '>';
-				$html .= '<source src="' . $baseurl . '/' . $relpath . '/' . $filename . '" type="' . $mime . '">';
+				$html .= '<source src="' . $filepath . '" type="' . $mime . '">';
 				$html .= ' Your browser does not support the video tag.</video>';
 			} else {
-				$html .= "<a href='$baseurl/$relpath/$filename' title='".htmlentities($title)."' class='swipebox thumbnaillink' rel='album' >";
+				$html .= "<a href='$filepath' title='".htmlentities($title)."' class='swipebox thumbnaillink' rel='album' >";
 					$html .= "<img data-mime='$mime' src='$thumbname' class='thumbnail'/>";
 				$html .= "</a>";
 			}
