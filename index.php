@@ -159,7 +159,7 @@ function getMedia($targetdir){
         $fh = fopen($targetdir . '/titles.csv','r');
         while(!feof($fh)){
             $line = fgetcsv($fh);
-            if(count($line) >= 2){
+            if(count($line) >= 2 && file_exists($line[0])){
                 $titles[$line[0]] = $line[1];
             }
         }
