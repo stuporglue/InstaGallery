@@ -27,14 +27,16 @@ $downloadButtonCode = '
 	margin-right: 5px;
 	margin-bottom: 3px;
 	cursor: pointer;
- }
-
+}
+.downloadButton {
+	padding-top: 7px;
+}
 </style>
 
 <script>
 
 $(document).ready(function(){
-	$(".thumbnailinner").prepend("<span class=\'fa fa-download downloadButton\'>");
+	$(".filename").prepend("<span class=\'fa fa-download downloadButton\'>");
 	$(".downloadButton").on("click",function(e){
         var outer = $(e.target).closest(".thumbnailwrapouter");
         var filename = outer.attr("id");
