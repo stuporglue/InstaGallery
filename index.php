@@ -58,7 +58,7 @@ function getTargetPath($path){
 function prettyName($name){
     $origName = $name;
     $name = basename($name);
-    $name = preg_split('/([^\w-]|[_])/',$name);
+    $name = preg_split('/([^\w-]|[_])/u',$name);
     $name = array_map('ucfirst',$name);
     $name = implode(' ',array_filter($name));
     if($name === ''){
