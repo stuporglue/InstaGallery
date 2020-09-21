@@ -235,6 +235,9 @@ function printThumbnail($targetdir,$thumbnailSize){
     $thumb = preg_replace('/(.*)\.([A-Za-z0-9]{3})$/',"$1" . "_thumb." . "$2",$orig);
 
     if(is_file($thumb)){
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$thumb_mime = finfo_file($finfo,$thumb);
+		header('Content-Type: ' . $thumb_mime);
         readfile($thumb);
         exit();
     }
@@ -278,6 +281,7 @@ function printThumbnail($targetdir,$thumbnailSize){
             $outfunc = 'imagepng';
             break;
         default:
+			header('Content-Type: ' . $mime);
             readfile($orig);
             exit();
         }   
@@ -310,12 +314,16 @@ function printThumbnail($targetdir,$thumbnailSize){
         $outfunc($tmpimg, $thumb);
         
         if(file_exists($thumb)){
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$thumb_mime = finfo_file($finfo,$thumb);
+			header('Content-Type: ' . $thumb_mime);
             readfile($thumb);
         }else{
             $outfunc($tmpimg);
         }   
     } catch (Exception $e){
-        print $e;
+        error_log($e);
+		header('Content-Type: ' . $mime);
         readfile($orig);
     }
 }
@@ -358,8 +366,7 @@ if($relpath !== './'){
 <title><?=$title?></title>
 <link href='//fonts.googleapis.com/css?family=Shadows+Into+Light' rel='stylesheet' type='text/css'>
 <link href='//cdn.rawgit.com/brutaldesign/swipebox/master/src/css/swipebox.min.css' rel='stylesheet' type='text/css'>
-<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <style type='text/css'>
 html,body {
     margin: 0;
