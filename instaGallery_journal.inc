@@ -7,18 +7,18 @@ $thumbnailSize = 600;
 
 function printJournalAndForm($targetdir,$extraHtml = ''){
 
-    $orig = $targetdir . '/' . $_GET['c'];
-    $journalFile = $targetdir . '/' . $_GET['c'] . '_journals.html';
+    $orig = $targetdir . '/' . $_GET['j'];
+    $journalFile = $targetdir . '/' . $_GET['j'] . '_journal.txt';
 
     $journalsAndForm = '<div class="journalheader"><span class="fa fa-close closejournal"/><span class="headertext">Please leave a journal entry below</span><div>' . $extraHtml;
 
     if(is_file($journalFile)){
-        $journalsAndForm .= file_get_contents($journalFile);
+        $journalsAndForm .= "<div class='existingjournals'>" . nl2br(file_get_contents($journalFile)) . "</div>";
     }
 
     $journalsAndForm .= "
     <form class='newjournal' onsubmit='return postNewJournal()'>
-        <input type='hidden' name='targetfile' value='{$_GET['c']}'/>
+        <input type='hidden' name='targetfile' value='{$_GET['j']}'/>
 		<label>Journal Date: </label><input type='date' name='journaldate'/>
         <textarea name='thejournal' placeholder='Type your journal here.'></textarea>
         <input type='submit' value='Add Journal Entry'/>
@@ -34,7 +34,7 @@ function processJournalForm($targetdir){
 
     $journalFile = $targetdir . '/' . $_POST['targetfile'] . '_journal.txt';
 
-    $_GET['c'] = $_POST['targetfile'];
+    $_GET['j'] = $_POST['targetfile'];
 
     $newJournal = str_replace("\r","\n",strip_tags($_POST['thejournal']));
 
@@ -65,7 +65,7 @@ if(isset($_POST['thejournal'])){
     exit();
 }
 
-if(isset($_GET['c'])){
+if(isset($_GET['j'])){
     printJournalAndForm($targetdir);
 }
 
@@ -346,6 +346,10 @@ $journalsCode = "
     position: relative;
 }
 
+.existingjournals {
+	margin-top: 20px;
+}
+
 </style>
 
 <script>
@@ -358,7 +362,7 @@ $journalsCode = "
 		var imgpath = relpath + '/' + filename;
 		$('#journalboximg').attr('src',imgpath);
 		$('#journalboximg').data('curimg',outer);
-        $.get(\"?d=\" + relpath + \"&c=\" + filename,function(success){
+        $.get(\"?d=\" + relpath + \"&j=\" + filename,function(success){
             $('#journalbox').html(success);
             $('#journalboxwrap').show();
         });
