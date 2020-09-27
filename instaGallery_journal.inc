@@ -69,8 +69,8 @@ if(isset($_GET['c'])){
     printJournalAndForm($targetdir);
 }
 
-$journalFiles = glob("$targetdir/*_journals.html");
-$journalFiles = str_replace('_journals.html','',$journalFiles);
+$journalFiles = glob("$targetdir/*_journal.txt");
+$journalFiles = str_replace('_journal.txt','',$journalFiles);
 $journalFiles = array_map('basename',$journalFiles);
 
 $journalsCode = "
