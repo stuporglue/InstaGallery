@@ -38,6 +38,7 @@ Three sample plugins are included:
  * instaGallery_auth.inc — A sample digest authentication plugin. Edit it to set the usernames and passwords. Note that digest authentication is like a picket fence. It's not actual security but gives some minor level of privacy.
  * instaGallery_comments.inc — Allow visitors to comment on individual photos and files. Requires that the server have write access to the directory the files are in. Creates a simple FILENAME_comments.html file for each file that has comments.
  * instaGallery_download.inc — Allow visitors to easily download individual files.
+ * instaGallery_journal.inc – Semi-convenient way to transcribe photos of old journals. Provides some contrast and brightness tools for convenience in case the images aren't great.
 
 
 #### Custom Plugins ####
