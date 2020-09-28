@@ -362,6 +362,7 @@ $journalsCode = "
 		var imgpath = relpath + '/' + filename;
 		$('#journalboximg').attr('src',imgpath);
 		$('#journalboximg').data('curimg',outer);
+		$('#journalboximg').data('origimg',outer);
         $.get(\"?d=\" + relpath + \"&j=\" + filename,function(success){
             $('#journalbox').html(success);
             $('#journalboxwrap').show();
@@ -470,7 +471,7 @@ $journalsCode = "
 					var filename = outer.attr('id');
 					var imgpath = relpath + '/' + filename;
 					$('#journalboximg').attr('src',imgpath);
-					var outer = $('#journalboximg').data('curimg',outer);
+					$('#journalboximg').data('curimg',outer);
 					break;
 				case 'jtool-next':
 					var outer = $('#journalboximg').data('curimg');
@@ -481,13 +482,21 @@ $journalsCode = "
 					var filename = outer.attr('id');
 					var imgpath = relpath + '/' + filename;
 					$('#journalboximg').attr('src',imgpath);
-					var outer = $('#journalboximg').data('curimg',outer);
+					$('#journalboximg').data('curimg',outer);
 					break;
 			}
 		});
     });
 
 	function journalImgReset(){
+		var origimg = $('#journalboximg').data('origimg');
+			if ( origimg != undefined && origimg.length > 0 ) {
+			var filename = origimg.attr('id');
+			var imgpath = relpath + '/' + filename;
+			$('#journalboximg').attr('src',imgpath);
+			$('#journalboximg').data('curimg',origimg);
+		}
+
 		var imgstyle = $('#journalboximg')[0].style;
 		imgstyle.width = '100%';
 		imgstyle.filter = 'brightness(100%) contrast(100%) invert(0%)';
