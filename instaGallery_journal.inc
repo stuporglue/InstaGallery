@@ -375,7 +375,7 @@ $journalsCode = "
         
         prom.then(function(success){
             var pid = $('.newjournal').find('input[type=hidden]').val();
-            $(document.getElementById(pid)).find('.fa-pencil-square-o').removeClass('fa-pencil-square-o').addClass('fa-pencil-square');
+            $(document.getElementById(pid)).find('.fa-pencil-square-o').removeClass('fa-pencil-square-o').addClass('fa-pencil-square').closest('.thumbnailwrapouter').addClass('journal-written');
             $('#journalbox').html(success);
         },function(fail){
             $('#journalbox').html(\"There was an error saving your journal. Please let the site owner know.\");
@@ -385,6 +385,14 @@ $journalsCode = "
     }
 
     $(document).ready(function(){
+		$('#nav').append('<input id=\"journallast\" class=\"journalnav\" type=\"button\" value=\"Go to last journal\"/>');
+
+		$('#journallast').on('click',function(){
+			var journals = $('.journal-written');
+			if ( journals.length > 0 ) {
+				journals.last()[0].scrollIntoView();
+			}	
+		});
         $('.thumbnailinner').prepend('<span class=\"fa fa-pencil-square-o journalButton\">');
         $('.journalButton').on('click',makeJournalDialog);
 
@@ -404,7 +412,7 @@ $journalsCode = "
     
         var tmp;
         for(var i = 0;i<existingJournal.length;i++){
-            $(document.getElementById(existingJournal[i])).find('.fa-pencil-square-o').removeClass('fa-pencil-square-o').addClass('fa-pencil-square');
+            $(document.getElementById(existingJournal[i])).find('.fa-pencil-square-o').removeClass('fa-pencil-square-o').addClass('fa-pencil-square').closest('.thumbnailwrapouter').addClass('journal-written');
         }
 
 		journalImgReset();

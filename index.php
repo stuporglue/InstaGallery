@@ -385,6 +385,10 @@ html,body {
     text-align: left;
 }
 
+#nav form {
+	display: inline-block;
+}
+
 #slides {
     padding-top: 25px;
     max-width: 100%;
