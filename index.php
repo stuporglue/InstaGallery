@@ -232,7 +232,7 @@ function getSlides($targetdir,$relpath,$thumbnailSize){
  */
 function printThumbnail($targetdir,$thumbnailSize){
     $orig = $targetdir . '/' . $_GET['t'];
-    $thumb = preg_replace('/(.*)\.([A-Za-z0-9]{3})$/',"$1" . "_thumb." . "$2",$orig);
+    $thumb = preg_replace('/(.*)\.([A-Za-z0-9]{3}.?)$/',"$1" . "_thumb." . "$2",$orig);
 
     if(is_file($thumb)){
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
