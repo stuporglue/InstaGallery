@@ -3,6 +3,15 @@ InstaGallery
 
 Add this file to the top level of a bunch of photo directories and boom: Instant Photo Gallery
 
+
+NOTICE
+------
+
+My photo library needs have outgrown InstaGallery. I'm happy to accept simple pull requests, but I'm not going to be updating this code again. 
+
+I have a new photo library project called [Fastback](https://github.com/stuporglue/fastback). It is not quite a simple as InstaGallery but it does handle a lot of photos, and is more mobile friendly. 
+
+
 Features
 --------
  * Supports nested directories
